@@ -10,7 +10,7 @@
 
     <form>
     <label for="titular" class="labels" >Latitud</label>
-    <input type="text" class="controls" id="captura-latitud" value="" name="latitud" readonly>
+    <input type="text" class="controls" id="captura-longitud" value="" name="latitud" readonly>
     <label for="titular" class="labels" >Longitud</label>
     <input type="text" class="controls" id="captura-latitud" value="" name="latitud" readonly>
     <input type="submit">
@@ -107,7 +107,9 @@
   });
 
   google.maps.event.addListener(map, "rightclick", function(event) {
+   
   var lat = event.latLng.lat();
+  console.log(lat)
   var lng = event.latLng.lng();
 
   document.getElementById("captura-longitud").value = lat; 
