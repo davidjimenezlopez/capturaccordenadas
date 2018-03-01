@@ -1,0 +1,128 @@
+<html>
+  <head>
+  <title>Agregar puntos</title>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  </head>
+<body>
+  <input id="pac-input" class="controls" type="text" placeholder="">
+  <div id="map"></div>
+  <div class="form-group">
+
+    <form>
+    <label for="titular" class="labels" >Latitud</label>
+    <input type="text" class="controls" id="captura-latitud" value="" name="latitud" readonly>
+    <label for="titular" class="labels" >Longitud</label>
+    <input type="text" class="controls" id="captura-latitud" value="" name="latitud" readonly>
+    <input type="submit">
+
+  </form>
+</div>
+<script type="text/javascript" src"js/geoscript.js"></script>"
+  <script>
+
+
+
+  function initMap() {
+
+  //Obtiene la latitud y la longitud a partir d ela ubicaciòn del navegador, requiere protocolo https	
+  /*  
+  if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(function (position) {
+  var latitud = position.coords.latitude;
+  var longitud = position.coords.longitude;
+   }else {
+  //x.innerHTML = "Geolocation is not supported by this browser.";
+  });
+  */
+
+
+  // esto valores pueden llegar de una DB o de la geolocalicación del navegador, definen el centro del mapa
+  var latitud = 4.562356;
+  var longitud= -74.235689
+  
+  
+  var map = new google.maps.Map(document.getElementById('map'), {
+  center: {lat:latitud, lng: longitud},
+  zoom: 16,
+  mapTypeId: 'roadmap'
+  });
+
+  //Crea el objeto serachbox y lo asocia con el input que buscara los sitios
+  var input = document.getElementById('pac-input');
+  var searchBox = new google.maps.places.SearchBox(input);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+  // Bias the SearchBox results towards current map's viewport.
+  map.addListener('bounds_changed', function() {
+  searchBox.setBounds(map.getBounds());
+  });
+
+  var markers = [];
+  // Agrega el listener disparado cuando el usuario selecciona una predicción y recupera mas detalles del sitio
+  
+  
+  searchBox.addListener('places_changed', function() {
+  var places = searchBox.getPlaces();
+  if (places.length == 0) {
+  return;
+  }
+
+  // Limpia todos los marcadores 
+  markers.forEach(function(marker) {
+  marker.setMap(null);
+  });
+  markers = [];
+
+  // Para casda sitio obtiene el icno, nombre y localizaciòn
+  var bounds = new google.maps.LatLngBounds();
+  places.forEach(function(place) {
+  if (!place.geometry) {
+  
+  return;
+  }
+  var icon = {
+  url: place.icon,
+  size: new google.maps.Size(71, 71),
+  origin: new google.maps.Point(0, 0),
+  anchor: new google.maps.Point(17, 34),
+  scaledSize: new google.maps.Size(25, 25)
+  };
+
+  // Crea marcadores de cada sitio
+  markers.push(new google.maps.Marker({
+  map: map,
+  icon: icon,
+  title: place.name,
+  position: place.geometry.location
+  }));
+
+  if (place.geometry.viewport) {
+  // Solo los geocódigos tienen una ventana gráfica.
+  bounds.union(place.geometry.viewport);
+  } else {
+  bounds.extend(place.geometry.location);
+  }
+  });
+  map.fitBounds(bounds);
+  });
+
+  google.maps.event.addListener(map, "rightclick", function(event) {
+  var lat = event.latLng.lat();
+  var lng = event.latLng.lng();
+
+  document.getElementById("captura-longitud").value = lat; 
+  document.getElementById("captura-latitud").value = lng;
+  });
+  
+  }
+  
+  </script>
+    
+  
+  <script 
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAKkdIcMVxg7U2Sv_vDltmScRXlCvh9fM&libraries=places&callback=initMap" async defer> 
+  </script>
+
+</body>
+
+</html>
